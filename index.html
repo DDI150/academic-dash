@@ -597,6 +597,73 @@
         }
 
         /* ============================================
+           INLINE SETTINGS CARD - High Visibility
+           ============================================ */
+        .settings-card {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--border-radius);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.45);
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .settings-card .settings-card-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .settings-card .settings-card-body {
+            flex: 1;
+            min-width: 160px;
+        }
+
+        .settings-card .settings-card-label {
+            color: #fff;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            opacity: 0.92;
+        }
+
+        .settings-card .settings-card-input {
+            width: 100%;
+            padding: 10px var(--spacing-md);
+            border: 3px solid rgba(255,255,255,0.6);
+            border-radius: var(--border-radius);
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-align: center;
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            min-height: var(--touch-target-min);
+            transition: border-color 0.2s, background 0.2s;
+            font-family: inherit;
+        }
+
+        .settings-card .settings-card-input::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+
+        .settings-card .settings-card-input:focus {
+            outline: none;
+            border-color: #fff;
+            background: rgba(255,255,255,0.3);
+        }
+
+        .settings-card .settings-card-hint {
+            color: rgba(255,255,255,0.82);
+            font-size: 0.78rem;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        /* ============================================
            TABLET & DESKTOP RESPONSIVE STYLES
            ============================================ */
 
@@ -676,6 +743,26 @@
             <button class="settings-btn" onclick="openSettingsModal()" aria-label="Settings">⚙️</button>
             <h1>🎓 לוח בקרה אקדמי</h1>
             <p>עקוב אחר ההתקדמות שלך והישאר מעודכן בלימודים</p>
+        </div>
+
+        <!-- Settings Card: Total Credits -->
+        <div class="settings-card">
+            <div class="settings-card-icon">🎯</div>
+            <div class="settings-card-body">
+                <div class="settings-card-label">נקודות זכות נדרשות לתואר</div>
+                <input
+                    type="number"
+                    id="inlineTotalCreditsInput"
+                    class="settings-card-input"
+                    value="120"
+                    min="1"
+                    max="500"
+                    placeholder="120"
+                    oninput="updateTotalCredits(this.value)"
+                    onchange="updateTotalCredits(this.value)"
+                    aria-label="סך נקודות זכות נדרשות לתואר">
+                <div class="settings-card-hint">שנה את הערך לעדכון מיידי של הפרוגרס</div>
+            </div>
         </div>
 
         <!-- Stats Overview -->
@@ -1348,11 +1435,11 @@
             document.getElementById('progressText').textContent = percentage.toFixed(1) + '%';
             document.getElementById('progressDetails').textContent = `${completedCredits} מתוך ${totalCreditsRequired} נקודות זכות הושלמו`;
 
-            // Update the settings input field to reflect current value
+            // Sync both settings inputs (modal + inline card)
             const totalCreditsInput = document.getElementById('totalCreditsInput');
-            if (totalCreditsInput) {
-                totalCreditsInput.value = totalCreditsRequired;
-            }
+            if (totalCreditsInput) totalCreditsInput.value = totalCreditsRequired;
+            const inlineInput = document.getElementById('inlineTotalCreditsInput');
+            if (inlineInput) inlineInput.value = totalCreditsRequired;
         }
 
         // Update total credits required
@@ -1368,6 +1455,9 @@
 
         // Settings Modal Functions
         function openSettingsModal() {
+            // Sync modal input with current value before showing
+            const modalInput = document.getElementById('totalCreditsInput');
+            if (modalInput) modalInput.value = totalCreditsRequired;
             document.getElementById('settingsModal').style.display = 'flex';
         }
 

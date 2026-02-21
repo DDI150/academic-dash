@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engineer Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .calculator-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .calculator-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-title {
+            color: #667eea;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f5f7ff;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .result-value {
+            color: #667eea;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .result-details {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .result-details div {
+            margin: 5px 0;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Engineer Calculator</h1>
+            <p>Professional Tools for Construction & Engineering</p>
+        </div>
+
+        <div class="calculator-grid">
+            <!-- Concrete Cost Calculator -->
+            <div class="calculator-card">
+                <h2 class="card-title">Concrete Cost Calculator</h2>
+
+                <div class="input-group">
+                    <label for="pricePerCubic">Price per m³ ($)</label>
+                    <input type="number" id="pricePerCubic" placeholder="Enter price per cubic meter" step="0.01" min="0">
+                </div>
+
+                <div class="input-group">
+                    <label for="quantity">Quantity (m³)</label>
+                    <input type="number" id="quantity" placeholder="Enter quantity in cubic meters" step="0.01" min="0">
+                </div>
+
+                <button class="btn" onclick="calculateConcreteCost()">Calculate Cost</button>
+
+                <div id="concreteResult" style="display: none;" class="result">
+                    <div class="result-label">Total Cost</div>
+                    <div class="result-value" id="totalCost">$0.00</div>
+                    <div class="result-details">
+                        <div><strong>Price per m³:</strong> <span id="displayPrice">$0.00</span></div>
+                        <div><strong>Quantity:</strong> <span id="displayQuantity">0 m³</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Meters to Feet/Inches Converter -->
+            <div class="calculator-card">
+                <h2 class="card-title">Meters to Feet & Inches</h2>
+
+                <div class="input-group">
+                    <label for="meters">Length (meters)</label>
+                    <input type="number" id="meters" placeholder="Enter length in meters" step="0.01" min="0">
+                </div>
+
+                <button class="btn" onclick="convertMeters()">Convert</button>
+
+                <div id="conversionResult" style="display: none;" class="result">
+                    <div class="result-label">Converted Length</div>
+                    <div class="result-value" id="feetInches">0' 0"</div>
+                    <div class="result-details">
+                        <div><strong>Total Feet:</strong> <span id="totalFeet">0.00 ft</span></div>
+                        <div><strong>Total Inches:</strong> <span id="totalInches">0.00 in</span></div>
+                        <div><strong>Original:</strong> <span id="displayMeters">0 m</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateConcreteCost() {
+            const price = parseFloat(document.getElementById('pricePerCubic').value);
+            const quantity = parseFloat(document.getElementById('quantity').value);
+
+            if (isNaN(price) || isNaN(quantity) || price < 0 || quantity < 0) {
+                alert('Please enter valid positive numbers for both fields.');
+                return;
+            }
+
+            const totalCost = price * quantity;
+
+            document.getElementById('totalCost').textContent = '$' + totalCost.toFixed(2);
+            document.getElementById('displayPrice').textContent = '$' + price.toFixed(2);
+            document.getElementById('displayQuantity').textContent = quantity.toFixed(2) + ' m³';
+            document.getElementById('concreteResult').style.display = 'block';
+        }
+
+        function convertMeters() {
+            const meters = parseFloat(document.getElementById('meters').value);
+
+            if (isNaN(meters) || meters < 0) {
+                alert('Please enter a valid positive number for meters.');
+                return;
+            }
+
+            // Convert meters to feet and inches
+            const totalFeet = meters * 3.28084;
+            const totalInches = meters * 39.3701;
+
+            // Get whole feet and remaining inches
+            const feet = Math.floor(totalFeet);
+            const inches = (totalFeet - feet) * 12;
+
+            document.getElementById('feetInches').textContent = feet + '\' ' + inches.toFixed(2) + '"';
+            document.getElementById('totalFeet').textContent = totalFeet.toFixed(2) + ' ft';
+            document.getElementById('totalInches').textContent = totalInches.toFixed(2) + ' in';
+            document.getElementById('displayMeters').textContent = meters.toFixed(2) + ' m';
+            document.getElementById('conversionResult').style.display = 'block';
+        }
+
+        // Add Enter key support
+        document.getElementById('pricePerCubic').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') calculateConcreteCost();
+        });
+
+        document.getElementById('quantity').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') calculateConcreteCost();
+        });
+
+        document.getElementById('meters').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') convertMeters();
+        });
+    </script>
+</body>
+</html>

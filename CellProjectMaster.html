@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cell Project Master - Professional Analysis Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0e27;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #1a1f3a 0%, #2a2f4a 100%);
+            border-radius: 15px;
+            border: 2px solid #d4af37;
+            box-shadow: 0 10px 40px rgba(212, 175, 55, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #4a9eff;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .upload-section {
+            background: #1a1f3a;
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 30px;
+            border: 2px dashed #4a9eff;
+            transition: all 0.3s ease;
+        }
+
+        .upload-section.drag-over {
+            border-color: #d4af37;
+            background: #252a45;
+            transform: scale(1.02);
+        }
+
+        .upload-area {
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: #4a9eff;
+            margin-bottom: 20px;
+        }
+
+        .upload-area h3 {
+            color: #d4af37;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .upload-area p {
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(74, 158, 255, 0.4);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%);
+            color: #0a0e27;
+        }
+
+        .btn-gold:hover {
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .data-section {
+            display: none;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1a1f3a 0%, #252a45 100%);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: #4a9eff;
+            box-shadow: 0 5px 20px rgba(74, 158, 255, 0.3);
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            color: #d4af37;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .table-section {
+            background: #1a1f3a;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid #333;
+        }
+
+        .section-title {
+            color: #d4af37;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #4a9eff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #252a45 0%, #2a2f4a 100%);
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            color: #d4af37;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #4a9eff;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #333;
+            color: #e0e0e0;
+        }
+
+        tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: #252a45;
+        }
+
+        .price-input {
+            width: 120px;
+            padding: 8px 12px;
+            background: #0a0e27;
+            border: 1px solid #4a9eff;
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-size: 0.95rem;
+        }
+
+        .price-input:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .total-row {
+            background: linear-gradient(135deg, #252a45 0%, #2a2f4a 100%);
+            font-weight: 700;
+        }
+
+        .total-row td {
+            color: #d4af37;
+            font-size: 1.1rem;
+            border-top: 2px solid #4a9eff;
+        }
+
+        .cost-highlight {
+            color: #4a9eff;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .raw-data-section {
+            background: #1a1f3a;
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid #333;
+        }
+
+        .data-table-container {
+            overflow-x: auto;
+            max-height: 500px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .file-info {
+            background: #252a45;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .file-info-item {
+            color: #888;
+            margin: 5px 0;
+        }
+
+        .file-info-item strong {
+            color: #4a9eff;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Cell Project Master</h1>
+            <p>Professional CSV Analysis & Cost Estimation Tool</p>
+        </div>
+
+        <div class="upload-section" id="uploadSection">
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">📁</div>
+                <h3>Upload Your CSV File</h3>
+                <p>Drag and drop your CSV file here, or click to browse</p>
+                <button class="btn">Select CSV File</button>
+            </div>
+            <input type="file" id="fileInput" class="file-input" accept=".csv" onchange="handleFileSelect(event)">
+            <div class="file-info" id="fileInfo"></div>
+        </div>
+
+        <div class="data-section" id="dataSection">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Records</div>
+                    <div class="stat-value" id="totalRecords">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Cell Types</div>
+                    <div class="stat-value" id="totalTypes">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Cells</div>
+                    <div class="stat-value" id="totalCells">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Estimated Cost</div>
+                    <div class="stat-value cost-highlight" id="totalCost">$0.00</div>
+                </div>
+            </div>
+
+            <div class="table-section">
+                <h2 class="section-title">Cell Type Summary & Cost Analysis</h2>
+                <p style="color: #888; margin-bottom: 15px;">Enter unit prices to calculate estimated costs</p>
+                <table id="summaryTable">
+                    <thead>
+                        <tr>
+                            <th>Cell Type</th>
+                            <th>Quantity</th>
+                            <th>Unit Price ($)</th>
+                            <th>Total Cost ($)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="summaryBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="raw-data-section">
+                <h2 class="section-title">Raw Data Preview</h2>
+                <div class="data-table-container">
+                    <table id="rawDataTable">
+                        <thead id="rawDataHead"></thead>
+                        <tbody id="rawDataBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-gold" onclick="exportSummary()">📥 Export Summary</button>
+                <button class="btn" onclick="resetTool()">🔄 Upload New File</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let csvData = [];
+        let summaryData = {};
+
+        // Drag and drop functionality
+        const uploadSection = document.getElementById('uploadSection');
+
+        uploadSection.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadSection.classList.add('drag-over');
+        });
+
+        uploadSection.addEventListener('dragleave', () => {
+            uploadSection.classList.remove('drag-over');
+        });
+
+        uploadSection.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadSection.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file && file.name.endsWith('.csv')) {
+                processFile(file);
+            } else {
+                alert('Please upload a valid CSV file.');
+            }
+        });
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                processFile(file);
+            }
+        }
+
+        function processFile(file) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const text = e.target.result;
+                parseCSV(text);
+                displayFileInfo(file);
+                displayData();
+            };
+
+            reader.readAsText(file);
+        }
+
+        function parseCSV(text) {
+            const lines = text.split('\n').filter(line => line.trim() !== '');
+            const headers = lines[0].split(',').map(h => h.trim());
+
+            csvData = [];
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',').map(v => v.trim());
+                const row = {};
+                headers.forEach((header, index) => {
+                    row[header] = values[index] || '';
+                });
+                csvData.push(row);
+            }
+
+            calculateSummary();
+        }
+
+        function calculateSummary() {
+            summaryData = {};
+
+            csvData.forEach(row => {
+                const cellType = row['Cell Type'] || row['cell type'] || row['CellType'] || 'Unknown';
+
+                if (summaryData[cellType]) {
+                    summaryData[cellType].count++;
+                } else {
+                    summaryData[cellType] = {
+                        count: 1,
+                        price: 0
+                    };
+                }
+            });
+        }
+
+        function displayFileInfo(file) {
+            const fileInfo = document.getElementById('fileInfo');
+            fileInfo.style.display = 'block';
+            fileInfo.innerHTML = `
+                <div class="file-info-item"><strong>File Name:</strong> ${file.name}</div>
+                <div class="file-info-item"><strong>File Size:</strong> ${(file.size / 1024).toFixed(2)} KB</div>
+                <div class="file-info-item"><strong>Last Modified:</strong> ${new Date(file.lastModified).toLocaleString()}</div>
+            `;
+        }
+
+        function displayData() {
+            // Update stats
+            document.getElementById('totalRecords').textContent = csvData.length;
+            document.getElementById('totalTypes').textContent = Object.keys(summaryData).length;
+            document.getElementById('totalCells').textContent = csvData.length;
+
+            // Display summary table
+            const summaryBody = document.getElementById('summaryBody');
+            summaryBody.innerHTML = '';
+
+            let grandTotal = 0;
+
+            Object.keys(summaryData).sort().forEach(cellType => {
+                const data = summaryData[cellType];
+                const row = document.createElement('tr');
+                const cost = data.count * data.price;
+                grandTotal += cost;
+
+                row.innerHTML = `
+                    <td>${cellType}</td>
+                    <td>${data.count}</td>
+                    <td><input type="number" class="price-input" value="${data.price}"
+                        onchange="updatePrice('${cellType}', this.value)" step="0.01" min="0"></td>
+                    <td class="cost-cell" data-type="${cellType}">$${cost.toFixed(2)}</td>
+                `;
+                summaryBody.appendChild(row);
+            });
+
+            // Add total row
+            const totalRow = document.createElement('tr');
+            totalRow.className = 'total-row';
+            totalRow.innerHTML = `
+                <td><strong>TOTAL</strong></td>
+                <td><strong>${csvData.length}</strong></td>
+                <td></td>
+                <td><strong>$${grandTotal.toFixed(2)}</strong></td>
+            `;
+            summaryBody.appendChild(totalRow);
+
+            // Update total cost stat
+            document.getElementById('totalCost').textContent = '$' + grandTotal.toFixed(2);
+
+            // Display raw data
+            displayRawData();
+
+            // Show data section
+            document.getElementById('dataSection').style.display = 'block';
+            document.getElementById('uploadSection').style.display = 'none';
+        }
+
+        function displayRawData() {
+            if (csvData.length === 0) return;
+
+            const headers = Object.keys(csvData[0]);
+            const rawDataHead = document.getElementById('rawDataHead');
+            const rawDataBody = document.getElementById('rawDataBody');
+
+            // Create headers
+            rawDataHead.innerHTML = '<tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
+
+            // Create rows (limit to first 100 for performance)
+            rawDataBody.innerHTML = '';
+            const displayLimit = Math.min(csvData.length, 100);
+
+            for (let i = 0; i < displayLimit; i++) {
+                const row = document.createElement('tr');
+                row.innerHTML = headers.map(h => `<td>${csvData[i][h]}</td>`).join('');
+                rawDataBody.appendChild(row);
+            }
+
+            if (csvData.length > 100) {
+                const infoRow = document.createElement('tr');
+                infoRow.innerHTML = `<td colspan="${headers.length}" style="text-align: center; color: #888; padding: 20px;">
+                    Showing first 100 of ${csvData.length} records
+                </td>`;
+                rawDataBody.appendChild(infoRow);
+            }
+        }
+
+        function updatePrice(cellType, price) {
+            summaryData[cellType].price = parseFloat(price) || 0;
+            updateCosts();
+        }
+
+        function updateCosts() {
+            let grandTotal = 0;
+
+            Object.keys(summaryData).forEach(cellType => {
+                const data = summaryData[cellType];
+                const cost = data.count * data.price;
+                grandTotal += cost;
+
+                const costCell = document.querySelector(`.cost-cell[data-type="${cellType}"]`);
+                if (costCell) {
+                    costCell.textContent = '$' + cost.toFixed(2);
+                }
+            });
+
+            // Update total row
+            const totalRow = document.querySelector('.total-row td:last-child');
+            if (totalRow) {
+                totalRow.innerHTML = '<strong>$' + grandTotal.toFixed(2) + '</strong>';
+            }
+
+            // Update total cost stat
+            document.getElementById('totalCost').textContent = '$' + grandTotal.toFixed(2);
+        }
+
+        function exportSummary() {
+            let csv = 'Cell Type,Quantity,Unit Price,Total Cost\n';
+
+            let grandTotal = 0;
+            Object.keys(summaryData).sort().forEach(cellType => {
+                const data = summaryData[cellType];
+                const cost = data.count * data.price;
+                grandTotal += cost;
+                csv += `${cellType},${data.count},${data.price.toFixed(2)},${cost.toFixed(2)}\n`;
+            });
+
+            csv += `\nTOTAL,${csvData.length},,${grandTotal.toFixed(2)}`;
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'cell_project_summary_' + new Date().getTime() + '.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function resetTool() {
+            csvData = [];
+            summaryData = {};
+            document.getElementById('dataSection').style.display = 'none';
+            document.getElementById('uploadSection').style.display = 'block';
+            document.getElementById('fileInput').value = '';
+            document.getElementById('fileInfo').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

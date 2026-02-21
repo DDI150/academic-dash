@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="description" content="Track your academic progress, grades, and deadlines with Orad Academic Dash">
+    <meta name="theme-color" content="#667eea">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Academic Dash">
+    <title>Orad Academic Dash</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Favicon and Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192x192.png">
+
+    <style>
+        /* ============================================
+           MOBILE-FIRST PROGRESSIVE WEB APP STYLES
+           Optimized for Android & S24 Ultra
+           ============================================ */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: rgba(102, 126, 234, 0.2);
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --text-dark: #333;
+            --text-light: #666;
+            --background-light: #f8f9fa;
+            --border-radius: 12px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            --touch-target-min: 48px;
+            --spacing-xs: 8px;
+            --spacing-sm: 12px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+        }
+
+        html {
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Heebo', 'Arial Hebrew', sans-serif;
+            background: var(--primary-gradient);
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: var(--spacing-sm);
+            padding-bottom: calc(env(safe-area-inset-bottom) + 16px);
+            color: var(--text-dark);
+            direction: rtl;
+            text-align: right;
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding-bottom: var(--spacing-xl);
+        }
+
+        /* HEADER - Mobile First */
+        .header {
+            background: white;
+            padding: var(--spacing-lg) var(--spacing-md);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: var(--spacing-md);
+            text-align: center;
+            position: relative;
+        }
+
+        .settings-btn {
+            position: absolute;
+            left: var(--spacing-md);
+            top: var(--spacing-md);
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: var(--spacing-sm);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            min-width: var(--touch-target-min);
+            min-height: var(--touch-target-min);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .settings-btn:active {
+            background: var(--background-light);
+            transform: scale(0.95);
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 1.75rem;
+            margin-bottom: var(--spacing-xs);
+            font-weight: 700;
+        }
+
+        .header p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* STATS GRID - Mobile First (2 columns) */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .stat-card {
+            background: white;
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease;
+            text-align: center;
+        }
+
+        .stat-card:active {
+            transform: scale(0.98);
+        }
+
+        .stat-card h3 {
+            color: var(--text-light);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--spacing-xs);
+            font-weight: 600;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        /* CONTENT GRID - Mobile First (1 column) */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .card {
+            background: white;
+            padding: var(--spacing-lg) var(--spacing-md);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .card h2 {
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-md);
+            font-size: 1.3rem;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: var(--spacing-xs);
+            font-weight: 700;
+        }
+
+        /* TABLES - Mobile Optimized */
+        .grades-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: var(--spacing-md);
+            font-size: 0.85rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        .grades-table thead {
+            background: var(--primary-gradient);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .grades-table th,
+        .grades-table td {
+            padding: var(--spacing-sm) var(--spacing-xs);
+            text-align: right;
+            border-bottom: 1px solid #eee;
+            min-width: 60px;
+        }
+
+        .grades-table tbody tr:active {
+            background: var(--background-light);
+        }
+
+        .grade-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            color: white;
+            font-size: 0.75rem;
+            white-space: nowrap;
+        }
+
+        .grade-A { background: #10b981; }
+        .grade-B { background: #3b82f6; }
+        .grade-C { background: #f59e0b; }
+        .grade-D { background: #ef4444; }
+        .grade-pending { background: #9ca3af; }
+
+        /* PROGRESS BAR - Mobile Optimized */
+        .progress-bar {
+            width: 100%;
+            height: 40px;
+            background: #e5e7eb;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: var(--spacing-md) 0;
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-gradient);
+            transition: width 1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        /* DEADLINE ITEMS - Mobile Touch Friendly */
+        .deadline-item {
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+            border-right: 4px solid var(--primary-color);
+            background: var(--background-light);
+            border-radius: var(--border-radius);
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .deadline-item:active {
+            transform: scale(0.98);
+        }
+
+        .deadline-item.urgent {
+            border-right-color: #ef4444;
+            background: #fee;
+        }
+
+        .deadline-item.upcoming {
+            border-right-color: #f59e0b;
+            background: #fffbeb;
+        }
+
+        .deadline-title {
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: var(--spacing-xs);
+            font-size: 1rem;
+        }
+
+        .deadline-date {
+            color: var(--text-light);
+            font-size: 0.85rem;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .deadline-countdown {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        /* BUTTONS - Large Touch Targets */
+        .add-btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 14px var(--spacing-xl);
+            border-radius: 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: var(--spacing-md);
+            width: 100%;
+            min-height: var(--touch-target-min);
+            box-shadow: var(--shadow);
+        }
+
+        .add-btn:active {
+            transform: scale(0.97);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* EMPTY STATES & GPA DISPLAY */
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-xl);
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .gpa-display {
+            text-align: center;
+            padding: var(--spacing-lg);
+            background: var(--primary-gradient);
+            border-radius: var(--border-radius);
+            color: white;
+            margin: var(--spacing-md) 0;
+        }
+
+        .gpa-display .gpa-value {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: var(--spacing-xs) 0;
+            line-height: 1;
+        }
+
+        .gpa-display .gpa-label {
+            font-size: 1rem;
+            opacity: 0.95;
+            font-weight: 500;
+        }
+
+        /* FORM INPUTS - Mobile Optimized */
+        input[type="number"],
+        input[type="text"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 2px solid #e5e7eb;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            margin: var(--spacing-xs) 0;
+            transition: border-color 0.3s ease;
+            min-height: var(--touch-target-min);
+            font-family: inherit;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* MODALS - Full Screen on Mobile */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            align-items: flex-end;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: white;
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 2px solid var(--background-light);
+        }
+
+        .modal-header h2 {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .close-btn {
+            font-size: 2rem;
+            cursor: pointer;
+            color: #999;
+            background: none;
+            border: none;
+            padding: var(--spacing-xs);
+            min-width: var(--touch-target-min);
+            min-height: var(--touch-target-min);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:active {
+            color: var(--text-dark);
+            background: var(--background-light);
+            border-radius: 50%;
+        }
+
+        .form-group {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: var(--spacing-xs);
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+
+        /* Component Row Styles in Modal - Mobile Optimized */
+        .component-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-xs);
+            margin-bottom: var(--spacing-sm);
+            padding: var(--spacing-sm);
+            background: var(--background-light);
+            border-radius: var(--border-radius);
+        }
+
+        .component-row input {
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .add-component-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-top: var(--spacing-sm);
+            min-height: var(--touch-target-min);
+        }
+
+        .add-component-btn:active {
+            background: #059669;
+            transform: scale(0.97);
+        }
+
+        .remove-component-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            width: 100%;
+            min-height: 44px;
+        }
+
+        .remove-component-btn:active {
+            background: #dc2626;
+            transform: scale(0.97);
+        }
+
+        .weight-validation {
+            margin-top: var(--spacing-sm);
+            padding: var(--spacing-sm);
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .weight-validation.valid {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .weight-validation.invalid {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Expandable Table Rows */
+        .course-row {
+            cursor: pointer;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .course-row:active {
+            background: #f1f5f9 !important;
+        }
+
+        .grades-table tr.component-row {
+            background: var(--background-light);
+            font-size: 0.8rem;
+        }
+
+        .grades-table tr.component-row.hidden {
+            display: none;
+        }
+
+        .expand-icon {
+            display: inline-block;
+            margin-left: var(--spacing-xs);
+            font-size: 0.8rem;
+            color: var(--primary-color);
+            transition: transform 0.3s ease;
+        }
+
+        .year-semester-header {
+            background: var(--primary-gradient);
+        }
+
+        .year-semester-header td {
+            border-bottom: none !important;
+            font-weight: 700;
+        }
+
+        /* Settings Modal Specific Styles */
+        .settings-group {
+            margin-bottom: var(--spacing-lg);
+            padding: var(--spacing-md);
+            background: var(--background-light);
+            border-radius: var(--border-radius);
+        }
+
+        .settings-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: var(--spacing-xs);
+            font-size: 1rem;
+        }
+
+        .settings-input {
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 2px solid var(--primary-color);
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: center;
+            min-height: var(--touch-target-min);
+        }
+
+        /* ============================================
+           TABLET & DESKTOP RESPONSIVE STYLES
+           ============================================ */
+
+        @media (min-width: 640px) {
+            body {
+                padding: var(--spacing-lg);
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: var(--spacing-md);
+            }
+
+            .header h1 {
+                font-size: 2.25rem;
+            }
+
+            .card h2 {
+                font-size: 1.5rem;
+            }
+
+            .component-row {
+                grid-template-columns: 2fr 1fr 1fr auto;
+            }
+
+            .remove-component-btn {
+                width: auto;
+                min-height: 40px;
+            }
+
+            .modal {
+                align-items: center;
+            }
+
+            .modal-content {
+                max-width: 600px;
+                border-radius: var(--border-radius);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .dashboard-container {
+                max-width: 1400px;
+            }
+
+            .content-grid {
+                grid-template-columns: 2fr 1fr;
+                gap: var(--spacing-lg);
+            }
+
+            .header {
+                padding: var(--spacing-xl);
+            }
+
+            .add-btn {
+                width: auto;
+            }
+
+            .gpa-display .gpa-value {
+                font-size: 4rem;
+            }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+            }
+
+            .deadline-item:hover {
+                transform: translateX(-5px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="header">
+            <button class="settings-btn" onclick="openSettingsModal()" aria-label="Settings">⚙️</button>
+            <h1>🎓 לוח בקרה אקדמי</h1>
+            <p>עקוב אחר ההתקדמות שלך והישאר מעודכן בלימודים</p>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>ממוצע נוכחי</h3>
+                <div class="value" id="currentGPA">0.00</div>
+            </div>
+            <div class="stat-card">
+                <h3>נקודות זכות שהושלמו</h3>
+                <div class="value" id="creditsCompleted">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>נקודות זכות נותרות</h3>
+                <div class="value" id="creditsRemaining">120</div>
+            </div>
+            <div class="stat-card">
+                <h3>משימות קרובות</h3>
+                <div class="value" id="upcomingTasks">0</div>
+            </div>
+        </div>
+
+        <!-- Degree Progress -->
+        <div class="card">
+            <h2>🎯 התקדמות התואר</h2>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar" style="width: 0%">
+                    <span id="progressText">0%</span>
+                </div>
+            </div>
+            <p style="text-align: center; color: #666; margin-top: 10px;">
+                <span id="progressDetails">0 מתוך 120 נקודות זכות הושלמו</span>
+            </p>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="content-grid">
+            <!-- Grade Tracker -->
+            <div class="card">
+                <h2>📊 מעקב ציונים</h2>
+                <button class="add-btn" onclick="openCourseModal()">+ הוסף קורס</button>
+
+                <table class="grades-table">
+                    <thead>
+                        <tr>
+                            <th>קורס</th>
+                            <th>נ"ז</th>
+                            <th>מבנה</th>
+                            <th>ציון</th>
+                            <th>סטטוס</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="gradesTableBody">
+                        <tr>
+                            <td colspan="6" class="empty-state">
+                                לא נוספו קורסים עדיין. לחץ על "הוסף קורס" להתחלה!
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- GPA Display -->
+                <div class="gpa-display">
+                    <div class="gpa-label">ממוצע משוקלל</div>
+                    <div class="gpa-value" id="gpaValue">0.00</div>
+                    <div class="gpa-label">מתוך 4.0</div>
+                </div>
+            </div>
+
+            <!-- Upcoming Deadlines -->
+            <div class="card">
+                <h2>⏰ מועדי הגשה קרובים</h2>
+                <button class="add-btn" onclick="openDeadlineModal()">+ הוסף מועד</button>
+
+                <div id="deadlinesList" style="margin-top: 20px;">
+                    <div class="empty-state">
+                        אין מועדי הגשה קרובים. הוסף כמה כדי להישאר מאורגן!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Course Modal -->
+    <div id="courseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="courseModalTitle">הוסף קורס</h2>
+                <span class="close-btn" onclick="closeCourseModal()">&times;</span>
+            </div>
+            <form id="courseForm" onsubmit="saveCourse(event)">
+                <div class="form-group">
+                    <label>שם הקורס</label>
+                    <input type="text" id="courseName" required placeholder="לדוגמה: מבני נתונים">
+                </div>
+                <div class="form-group">
+                    <label>נקודות זכות</label>
+                    <input type="number" id="courseCredits" required min="1" max="10" placeholder="לדוגמה: 3">
+                </div>
+                <div class="form-group">
+                    <label>שנה</label>
+                    <select id="courseYear" required>
+                        <option value="">בחר שנה</option>
+                        <option value="1">שנה א'</option>
+                        <option value="2">שנה ב'</option>
+                        <option value="3">שנה ג'</option>
+                        <option value="4">שנה ד'</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>סמסטר</label>
+                    <select id="courseSemester" required>
+                        <option value="">בחר סמסטר</option>
+                        <option value="A">סמסטר א'</option>
+                        <option value="B">סמסטר ב'</option>
+                        <option value="Summer">קיץ</option>
+                    </select>
+                </div>
+
+                <!-- Components Section -->
+                <div class="form-group">
+                    <label>רכיבי הקורס</label>
+                    <div id="componentsContainer"></div>
+                    <button type="button" class="add-component-btn" onclick="addComponentRow()">+ הוסף רכיב</button>
+                    <div id="weightValidation" class="weight-validation"></div>
+                </div>
+
+                <button type="submit" class="add-btn" id="courseSubmitBtn" style="width: 100%;">הוסף קורס</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Deadline Modal -->
+    <div id="deadlineModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>הוסף מועד הגשה</h2>
+                <span class="close-btn" onclick="closeDeadlineModal()">&times;</span>
+            </div>
+            <form id="deadlineForm" onsubmit="addDeadline(event)">
+                <div class="form-group">
+                    <label>כותרת המשימה</label>
+                    <input type="text" id="deadlineTitle" required placeholder="לדוגמה: מבחן סופי">
+                </div>
+                <div class="form-group">
+                    <label>קורס</label>
+                    <input type="text" id="deadlineCourse" required placeholder="לדוגמה: חשבון אינפיניטסימלי 1">
+                </div>
+                <div class="form-group">
+                    <label>תאריך הגשה</label>
+                    <input type="date" id="deadlineDate" required>
+                </div>
+                <button type="submit" class="add-btn" style="width: 100%;">הוסף מועד</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚙️ הגדרות</h2>
+                <span class="close-btn" onclick="closeSettingsModal()">&times;</span>
+            </div>
+            <div class="settings-group">
+                <label for="totalCreditsInput">סך נקודות זכות נדרשות לתואר</label>
+                <input
+                    type="number"
+                    id="totalCreditsInput"
+                    class="settings-input"
+                    value="120"
+                    min="1"
+                    max="500"
+                    onchange="updateTotalCredits(this.value)"
+                    oninput="updateTotalCredits(this.value)">
+                <p style="text-align: center; color: var(--text-light); margin-top: var(--spacing-xs); font-size: 0.85rem;">
+                    ברירת מחדל: 120 נקודות זכות
+                </p>
+            </div>
+            <button class="add-btn" onclick="closeSettingsModal()">סגור</button>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let courses = [];
+        let deadlines = [];
+        let editingCourseIndex = -1; // Track which course is being edited
+        let totalCreditsRequired = 120; // User-configurable total credits
+
+        // localStorage functions
+        function saveToStorage() {
+            localStorage.setItem('academicDashboard_courses', JSON.stringify(courses));
+            localStorage.setItem('academicDashboard_deadlines', JSON.stringify(deadlines));
+            localStorage.setItem('academicDashboard_totalCredits', totalCreditsRequired.toString());
+        }
+
+        function loadFromStorage() {
+            const savedCourses = localStorage.getItem('academicDashboard_courses');
+            const savedDeadlines = localStorage.getItem('academicDashboard_deadlines');
+            const savedTotalCredits = localStorage.getItem('academicDashboard_totalCredits');
+
+            if (savedCourses) {
+                courses = JSON.parse(savedCourses);
+            }
+            if (savedDeadlines) {
+                deadlines = JSON.parse(savedDeadlines);
+            }
+            if (savedTotalCredits) {
+                totalCreditsRequired = parseInt(savedTotalCredits) || 120;
+            }
+
+            updateDashboard();
+        }
+
+        // Initialize with empty data (clean slate)
+        function initSampleData() {
+            courses = [];
+            deadlines = [];
+            updateDashboard();
+        }
+
+        // Course Modal Functions
+        function openCourseModal() {
+            editingCourseIndex = -1;
+            document.getElementById('courseModalTitle').textContent = 'הוסף קורס';
+            document.getElementById('courseSubmitBtn').textContent = 'הוסף קורס';
+            document.getElementById('courseForm').reset();
+            document.getElementById('componentsContainer').innerHTML = '';
+            addComponentRow(); // Start with one empty component row
+            document.getElementById('courseModal').style.display = 'flex';
+        }
+
+        function openEditCourseModal(index) {
+            editingCourseIndex = index;
+            const course = courses[index];
+
+            document.getElementById('courseModalTitle').textContent = 'ערוך קורס';
+            document.getElementById('courseSubmitBtn').textContent = 'עדכן קורס';
+            document.getElementById('courseName').value = course.name;
+            document.getElementById('courseCredits').value = course.credits;
+            document.getElementById('courseYear').value = course.year || '';
+            document.getElementById('courseSemester').value = course.semester || '';
+
+            // Populate components
+            document.getElementById('componentsContainer').innerHTML = '';
+            if (course.components && course.components.length > 0) {
+                course.components.forEach(comp => {
+                    addComponentRow(comp.name, comp.weight, comp.grade !== null ? comp.grade : '');
+                });
+            } else {
+                // Legacy course - add single component
+                addComponentRow('ציון סופי', 100, course.grade || '');
+            }
+
+            document.getElementById('courseModal').style.display = 'flex';
+        }
+
+        function closeCourseModal() {
+            document.getElementById('courseModal').style.display = 'none';
+            document.getElementById('courseForm').reset();
+            editingCourseIndex = -1;
+        }
+
+        function addComponentRow(name = '', weight = '', grade = '') {
+            const container = document.getElementById('componentsContainer');
+            const rowId = Date.now(); // Unique ID for this row
+
+            const rowHTML = `
+                <div class="component-row" id="component-${rowId}">
+                    <input type="text" class="component-name" placeholder="שם הרכיב (לדוגמה: שיעורי בית)"
+                           value="${name}" onchange="updateWeightValidation()">
+                    <input type="number" class="component-weight" placeholder="משקל %"
+                           min="0" max="100" step="0.1" value="${weight}"
+                           onchange="updateWeightValidation()" required>
+                    <input type="number" class="component-grade" placeholder="ציון (0-100)"
+                           min="0" max="100" step="0.1" value="${grade}">
+                    <button type="button" class="remove-component-btn" onclick="removeComponentRow(${rowId})">מחק</button>
+                </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', rowHTML);
+            updateWeightValidation();
+        }
+
+        function removeComponentRow(rowId) {
+            const row = document.getElementById(`component-${rowId}`);
+            if (row) {
+                row.remove();
+                updateWeightValidation();
+            }
+        }
+
+        function getComponentsFromModal() {
+            const rows = document.querySelectorAll('#componentsContainer .component-row');
+            const components = [];
+
+            rows.forEach(row => {
+                const name = row.querySelector('.component-name').value.trim();
+                const weight = parseFloat(row.querySelector('.component-weight').value) || 0;
+                const gradeInput = row.querySelector('.component-grade').value;
+                const grade = gradeInput ? parseFloat(gradeInput) : null;
+
+                if (name) {
+                    components.push({ name, weight, grade });
+                }
+            });
+
+            return components;
+        }
+
+        function updateWeightValidation() {
+            const components = getComponentsFromModal();
+            const validation = validateComponentWeights(components);
+            const validationDiv = document.getElementById('weightValidation');
+
+            validationDiv.textContent = validation.message;
+            validationDiv.className = validation.valid ? 'weight-validation valid' : 'weight-validation invalid';
+        }
+
+        function saveCourse(event) {
+            event.preventDefault();
+
+            const components = getComponentsFromModal();
+            const validation = validateComponentWeights(components);
+
+            // Validate component weights
+            if (!validation.valid) {
+                alert(validation.message);
+                return;
+            }
+
+            const course = {
+                name: document.getElementById('courseName').value,
+                credits: parseInt(document.getElementById('courseCredits').value),
+                year: parseInt(document.getElementById('courseYear').value),
+                semester: document.getElementById('courseSemester').value,
+                components: components
+            };
+
+            if (editingCourseIndex === -1) {
+                courses.push(course);
+            } else {
+                courses[editingCourseIndex] = course;
+            }
+
+            updateDashboard();
+            closeCourseModal();
+        }
+
+        function deleteCourse(index) {
+            if (confirm('האם אתה בטוח שברצונך למחוק קורס זה?')) {
+                courses.splice(index, 1);
+                updateDashboard();
+            }
+        }
+
+        // Deadline Modal Functions
+        function openDeadlineModal() {
+            document.getElementById('deadlineModal').style.display = 'flex';
+            // Set minimum date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('deadlineDate').setAttribute('min', today);
+        }
+
+        function closeDeadlineModal() {
+            document.getElementById('deadlineModal').style.display = 'none';
+            document.getElementById('deadlineForm').reset();
+        }
+
+        function addDeadline(event) {
+            event.preventDefault();
+
+            const deadline = {
+                title: document.getElementById('deadlineTitle').value,
+                course: document.getElementById('deadlineCourse').value,
+                date: document.getElementById('deadlineDate').value
+            };
+
+            deadlines.push(deadline);
+            updateDashboard();
+            closeDeadlineModal();
+        }
+
+        function deleteDeadline(index) {
+            if (confirm('האם אתה בטוח שברצונך למחוק מועד זה?')) {
+                deadlines.splice(index, 1);
+                updateDashboard();
+            }
+        }
+
+        // GPA Calculation
+        function calculateGPA() {
+            const gradedCourses = courses.filter(c => {
+                const grade = calculateCourseGrade(c);
+                return grade !== null;
+            });
+            if (gradedCourses.length === 0) return 0;
+
+            let totalPoints = 0;
+            let totalCredits = 0;
+
+            gradedCourses.forEach(course => {
+                const courseGrade = calculateCourseGrade(course);
+                const gradePoint = convertToGPA(courseGrade);
+                totalPoints += gradePoint * course.credits;
+                totalCredits += course.credits;
+            });
+
+            return totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : 0;
+        }
+
+        function convertToGPA(grade) {
+            if (grade >= 93) return 4.0;
+            if (grade >= 90) return 3.7;
+            if (grade >= 87) return 3.3;
+            if (grade >= 83) return 3.0;
+            if (grade >= 80) return 2.7;
+            if (grade >= 77) return 2.3;
+            if (grade >= 73) return 2.0;
+            if (grade >= 70) return 1.7;
+            if (grade >= 67) return 1.3;
+            if (grade >= 65) return 1.0;
+            return 0.0;
+        }
+
+        function getGradeBadge(grade) {
+            if (grade === null) return '<span class="grade-badge grade-pending">ממתין</span>';
+            if (grade >= 90) return '<span class="grade-badge grade-A">מעולה</span>';
+            if (grade >= 80) return '<span class="grade-badge grade-B">טוב מאוד</span>';
+            if (grade >= 70) return '<span class="grade-badge grade-C">טוב</span>';
+            return '<span class="grade-badge grade-D">מספק</span>';
+        }
+
+        function calculateCourseGrade(course) {
+            // Handle courses without components (legacy or direct entry)
+            if (!course.components || course.components.length === 0) {
+                return course.grade || null;
+            }
+
+            // Filter components that have grades
+            const gradedComponents = course.components.filter(c =>
+                c.grade !== null && c.grade !== undefined && c.grade !== ''
+            );
+
+            if (gradedComponents.length === 0) {
+                return null; // No grades entered yet
+            }
+
+            // Calculate weighted average
+            let weightedSum = 0;
+            let totalWeight = 0;
+
+            gradedComponents.forEach(comp => {
+                weightedSum += (comp.grade * comp.weight);
+                totalWeight += comp.weight;
+            });
+
+            // Normalize to 100 scale if not all components are graded
+            return totalWeight > 0 ? (weightedSum / totalWeight) : null;
+        }
+
+        function validateComponentWeights(components) {
+            if (!components || components.length === 0) {
+                return { valid: false, total: 0, message: "יש להוסיף לפחות רכיב אחד" };
+            }
+
+            const total = components.reduce((sum, comp) => sum + (parseFloat(comp.weight) || 0), 0);
+
+            if (Math.abs(total - 100) < 0.01) {
+                return { valid: true, total: 100, message: "✓ סכום המשקלים תקין" };
+            } else {
+                return {
+                    valid: false,
+                    total: total.toFixed(1),
+                    message: `⚠ סכום המשקלים: ${total.toFixed(1)}% (צריך להיות 100%)`
+                };
+            }
+        }
+
+        // Update Dashboard
+        function updateDashboard() {
+            updateGradesTable();
+            updateDeadlinesList();
+            updateStats();
+            updateProgress();
+            saveToStorage(); // Persist data to localStorage
+        }
+
+        function updateGradesTable() {
+            const tbody = document.getElementById('gradesTableBody');
+
+            if (courses.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            לא נוספו קורסים עדיין. לחץ על "הוסף קורס" להתחלה!
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // Group courses by year and semester
+            const grouped = {};
+            courses.forEach((course, index) => {
+                const year = course.year || 0;
+                const semester = course.semester || 'Unknown';
+                const key = `${year}-${semester}`;
+
+                if (!grouped[key]) {
+                    grouped[key] = {
+                        year: year,
+                        semester: semester,
+                        courses: []
+                    };
+                }
+                grouped[key].courses.push({ course, index });
+            });
+
+            // Sort groups by year and semester
+            const sortedGroups = Object.values(grouped).sort((a, b) => {
+                if (a.year !== b.year) return a.year - b.year;
+                const semesterOrder = { 'A': 1, 'B': 2, 'Summer': 3 };
+                return (semesterOrder[a.semester] || 0) - (semesterOrder[b.semester] || 0);
+            });
+
+            let html = '';
+            sortedGroups.forEach(group => {
+                const semesterLabel = group.semester === 'A' ? 'סמסטר א\'' :
+                                     group.semester === 'B' ? 'סמסטר ב\'' : 'קיץ';
+
+                // Group header
+                html += `
+                    <tr class="year-semester-header">
+                        <td colspan="6" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: bold; padding: 12px 15px; text-align: right;">
+                            שנה ${group.year} - ${semesterLabel}
+                        </td>
+                    </tr>
+                `;
+
+                // Courses in this group
+                group.courses.forEach(({ course, index }) => {
+                    const courseGrade = calculateCourseGrade(course);
+                    const hasComponents = course.components && course.components.length > 0;
+
+                    // Main course row
+                    html += `
+                        <tr class="course-row" onclick="toggleComponents(${index})">
+                            <td>
+                                ${hasComponents ? `<span class="expand-icon" id="expand-icon-${index}">▼</span>` : ''}
+                                <strong>${course.name}</strong>
+                            </td>
+                            <td>${course.credits}</td>
+                            <td>${hasComponents ? 'רכיבים' : '100%'}</td>
+                            <td>${courseGrade !== null ? courseGrade.toFixed(1) : 'לא זמין'}</td>
+                            <td>${getGradeBadge(courseGrade)}</td>
+                            <td>
+                                <button onclick="event.stopPropagation(); openEditCourseModal(${index})"
+                                        style="background: #667eea; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer; margin-left: 5px;">
+                                    ערוך
+                                </button>
+                                <button onclick="event.stopPropagation(); deleteCourse(${index})"
+                                        style="background: #ef4444; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer;">
+                                    מחק
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+
+                    // Component rows (hidden by default)
+                    if (hasComponents) {
+                        course.components.forEach((comp, compIndex) => {
+                            const isLast = compIndex === course.components.length - 1;
+                            const prefix = isLast ? '└─' : '├─';
+                            html += `
+                                <tr class="component-row hidden" data-parent="${index}">
+                                    <td style="padding-right: 40px; color: #666;">
+                                        ${prefix} ${comp.name} (${comp.weight}%)
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                    <td style="color: #666;">${comp.grade !== null ? comp.grade.toFixed(1) : 'לא זמין'}</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            `;
+                        });
+                    }
+                });
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        function toggleComponents(courseIndex) {
+            const componentRows = document.querySelectorAll(`tr.component-row[data-parent="${courseIndex}"]`);
+            const expandIcon = document.getElementById(`expand-icon-${courseIndex}`);
+
+            componentRows.forEach(row => {
+                row.classList.toggle('hidden');
+            });
+
+            if (expandIcon) {
+                expandIcon.textContent = expandIcon.textContent === '▼' ? '▲' : '▼';
+            }
+        }
+
+        function updateDeadlinesList() {
+            const container = document.getElementById('deadlinesList');
+
+            if (deadlines.length === 0) {
+                container.innerHTML = '<div class="empty-state">אין מועדי הגשה קרובים. הוסף כמה כדי להישאר מאורגן!</div>';
+                return;
+            }
+
+            // Sort by date
+            const sortedDeadlines = [...deadlines].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            container.innerHTML = sortedDeadlines.map((deadline, index) => {
+                const daysUntil = getDaysUntilDeadline(deadline.date);
+                const urgencyClass = daysUntil <= 3 ? 'urgent' : daysUntil <= 7 ? 'upcoming' : '';
+
+                return `
+                    <div class="deadline-item ${urgencyClass}">
+                        <span class="deadline-countdown">${daysUntil} ימים</span>
+                        <div class="deadline-title">${deadline.title}</div>
+                        <div class="deadline-date">${deadline.course} • ${formatDate(deadline.date)}</div>
+                        <button onclick="deleteDeadline(${deadlines.indexOf(deadline)})" style="background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-top: 10px; font-size: 0.85em;">
+                            מחק
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getDaysUntilDeadline(dateString) {
+            const deadline = new Date(dateString);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const diffTime = deadline - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('he-IL', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function updateStats() {
+            const gpa = calculateGPA();
+            document.getElementById('currentGPA').textContent = gpa;
+            document.getElementById('gpaValue').textContent = gpa;
+
+            const completedCredits = courses.filter(c => calculateCourseGrade(c) !== null).reduce((sum, c) => sum + c.credits, 0);
+            document.getElementById('creditsCompleted').textContent = completedCredits;
+            document.getElementById('creditsRemaining').textContent = totalCreditsRequired - completedCredits;
+
+            const upcomingCount = deadlines.filter(d => getDaysUntilDeadline(d.date) >= 0).length;
+            document.getElementById('upcomingTasks').textContent = upcomingCount;
+        }
+
+        function updateProgress() {
+            const completedCredits = courses.filter(c => calculateCourseGrade(c) !== null).reduce((sum, c) => sum + c.credits, 0);
+            const percentage = Math.min((completedCredits / totalCreditsRequired) * 100, 100);
+
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = percentage.toFixed(1) + '%';
+            document.getElementById('progressDetails').textContent = `${completedCredits} מתוך ${totalCreditsRequired} נקודות זכות הושלמו`;
+
+            // Update the settings input field to reflect current value
+            const totalCreditsInput = document.getElementById('totalCreditsInput');
+            if (totalCreditsInput) {
+                totalCreditsInput.value = totalCreditsRequired;
+            }
+        }
+
+        // Update total credits required
+        function updateTotalCredits(value) {
+            const newTotal = parseInt(value);
+            if (newTotal && newTotal > 0 && newTotal <= 500) {
+                totalCreditsRequired = newTotal;
+                updateStats();
+                updateProgress();
+                saveToStorage();
+            }
+        }
+
+        // Settings Modal Functions
+        function openSettingsModal() {
+            document.getElementById('settingsModal').style.display = 'flex';
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').style.display = 'none';
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const courseModal = document.getElementById('courseModal');
+            const deadlineModal = document.getElementById('deadlineModal');
+            const settingsModal = document.getElementById('settingsModal');
+
+            if (event.target === courseModal) {
+                closeCourseModal();
+            }
+            if (event.target === deadlineModal) {
+                closeDeadlineModal();
+            }
+            if (event.target === settingsModal) {
+                closeSettingsModal();
+            }
+        }
+
+        // Service Worker Registration for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then((registration) => {
+                        console.log('ServiceWorker registered successfully:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log('ServiceWorker registration failed:', error);
+                    });
+            });
+        }
+
+        // PWA Install Prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // You can show a custom install button here if desired
+            console.log('PWA install prompt available');
+        });
+
+        // Initialize dashboard from localStorage (or empty if first time)
+        loadFromStorage();
+    </script>
+</body>
+</html>

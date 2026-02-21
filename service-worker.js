@@ -1,6 +1,7 @@
-const CACHE_NAME = 'orad-academic-dash-v1';
+const CACHE_NAME = 'orad-academic-dash-v2';
 const urlsToCache = [
-  './StudentDashboard.html',
+  './',
+  './index.html',
   './manifest.json'
 ];
 
@@ -63,7 +64,7 @@ self.addEventListener('fetch', (event) => {
           return response;
         }).catch(() => {
           // Offline fallback
-          return caches.match('./StudentDashboard.html');
+          return caches.match('./index.html');
         });
       })
   );
